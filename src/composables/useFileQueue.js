@@ -8,9 +8,24 @@ export const ACCEPTED_EXTENSIONS = ['apng', 'png', 'avif', 'gif', 'jpg', 'jpeg',
 
 const files = ref([])
 const quality = ref('0.8')
-const sizeFactor = ref('1')
+const sizeChoice = ref('1') // scale factor value, or 'custom' for explicit dimensions
+const customWidth = ref('')
+const customHeight = ref('')
+const keepAspect = ref(true)
 let nextId = 0
 let converting = false
+
+function snapshotResize() {
+  if (sizeChoice.value === 'custom') {
+    return {
+      mode: 'custom',
+      width: parseInt(customWidth.value, 10) || null,
+      height: parseInt(customHeight.value, 10) || null,
+      keepAspect: keepAspect.value,
+    }
+  }
+  return { mode: 'scale', factor: parseFloat(sizeChoice.value) }
+}
 
 const hasFiles = computed(() => files.value.length > 0)
 const downloadCount = computed(() => files.value.filter((f) => f.outName !== null).length)
@@ -44,7 +59,7 @@ function addFile(file) {
     blob: null,
     url: null,
     quality: parseFloat(quality.value),
-    sizeFactor: parseFloat(sizeFactor.value),
+    resize: snapshotResize(),
     thumbUrl: null,
     transparent: false,
     bg: null,
@@ -68,9 +83,9 @@ async function pump() {
     item.state = 'processing'
     // Quality and size are read at conversion time, like the original selects
     item.quality = parseFloat(quality.value)
-    item.sizeFactor = parseFloat(sizeFactor.value)
+    item.resize = snapshotResize()
     try {
-      const blob = await encodeWebp(item.file, item.sizeFactor, item.quality)
+      const blob = await encodeWebp(item.file, item.resize, item.quality)
       if (!files.value.includes(item)) continue // removed while converting
       item.blob = blob
       item.url = URL.createObjectURL(blob)
@@ -138,7 +153,10 @@ export function useFileQueue() {
   return {
     files,
     quality,
-    sizeFactor,
+    sizeChoice,
+    customWidth,
+    customHeight,
+    keepAspect,
     hasFiles,
     downloadCount,
     canDownloadAll,
