@@ -19,12 +19,23 @@ const displayedName = computed(() =>
 )
 const isActive = computed(() => activeItem.value === props.item)
 
+const savings = computed(() => {
+  if (!props.item.blob || props.item.state !== 'done') return null
+  return 100 - Math.round((100 * props.item.blob.size) / props.item.file.size)
+})
+const savingsText = computed(() => {
+  if (savings.value === null) return ''
+  if (savings.value > 0) return `-${savings.value}%`
+  if (savings.value < 0) return `+${-savings.value}%`
+  return '0%'
+})
+
 function refitName() {
   fittedName.value = fitText(displayedName.value, nameEl.value)
 }
 
 onMounted(refitName)
-watch(displayedName, refitName, { flush: 'post' })
+watch([displayedName, savingsText], refitName, { flush: 'post' })
 </script>
 
 <template>
@@ -34,6 +45,7 @@ watch(displayedName, refitName, { flush: 'post' })
          :style="item.bg ? { backgroundColor: item.bg } : null" alt=""/>
     <header class="imgHead">
       <p ref="nameEl" class="imgName">{{ fittedName }}</p>
+      <span v-if="savings !== null" class="imgSavings" :class="{ imgGrew: savings < 0 }">{{ savingsText }}</span>
       <svg class="removeImgBtn" viewBox="0 0 18 18" width="18" height="18" @click="removeFile(item)">
         <use href="#remove"></use>
       </svg>

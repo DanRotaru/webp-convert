@@ -1215,3 +1215,131 @@ h1 {
 #qualityLoaderCont {
   display: block
 }
+
+/* --- Compression badge on file cards --- */
+.imgSavings {
+  flex-shrink: 0;
+  background: #3db58f;
+  color: #fff;
+  font-size: .7em;
+  font-weight: 600;
+  line-height: 1.6;
+  padding: 0 5px;
+  border-radius: 8px;
+  margin-right: 6px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .2))
+}
+
+.imgSavings.imgGrew {
+  background: #d44d3b
+}
+
+/* --- Custom size inputs --- */
+.customSizeCont {
+  width: auto;
+  gap: 6px
+}
+
+.sizeInput {
+  width: 70px;
+  padding: 4px;
+  border: 0;
+  outline: 0;
+  border-radius: .25em;
+  background-color: #a5e3e9;
+  color: #454545;
+  -moz-appearance: textfield
+}
+
+.sizeInput::-webkit-outer-spin-button, .sizeInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0
+}
+
+.sizeInput::placeholder {
+  color: #45454599
+}
+
+.aspectLock {
+  border: 0;
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e4e4e4;
+  color: #999;
+  transition: .25s
+}
+
+.aspectLock.locked {
+  background: #007c86;
+  color: #fff
+}
+
+.aspectLock:hover {
+  opacity: .8
+}
+
+.sizeUnit {
+  color: #454545;
+  font-size: 10pt;
+  user-select: none
+}
+
+/* --- Compare canvas: zoom & pan --- */
+#compareDiv {
+  cursor: grab;
+  touch-action: none
+}
+
+#compareDiv.panning {
+  cursor: grabbing
+}
+
+#compareDiv .centerImg {
+  user-select: none;
+  -webkit-user-drag: none
+}
+
+#zoomTools {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(51, 51, 51, .15);
+  user-select: none
+}
+
+#zoomTools button {
+  border: 0;
+  background: 0 0;
+  cursor: pointer;
+  color: #454545;
+  height: 28px;
+  transition: .25s
+}
+
+#zoomTools button:hover {
+  background: #a5e3e9
+}
+
+.zoomBtn {
+  width: 28px;
+  font-size: 13pt;
+  line-height: 1
+}
+
+#zoomLevel {
+  min-width: 48px;
+  font-size: 9pt;
+  border-left: 1px solid #ececec !important;
+  border-right: 1px solid #ececec !important
+}

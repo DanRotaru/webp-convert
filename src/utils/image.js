@@ -28,10 +28,48 @@ async function loadImageFromFile(file) {
   }
 }
 
-function drawScaled(img, sizeFactor) {
+/**
+ * Resolves the output dimensions for a resize descriptor:
+ * { mode: 'scale', factor } or { mode: 'custom', width, height, keepAspect }.
+ * With keepAspect, a single dimension drives the other; both dimensions fit
+ * the image inside the box ("contain").
+ */
+export function computeTargetSize(img, resize) {
+  const w0 = img.width
+  const h0 = img.height
+  let w = w0
+  let h = h0
+  if (!resize || resize.mode === 'scale') {
+    const factor = resize?.factor ?? 1
+    w = w0 * factor
+    h = h0 * factor
+  } else if (resize.width || resize.height) {
+    const { width, height, keepAspect } = resize
+    if (keepAspect) {
+      if (width && height) {
+        const s = Math.min(width / w0, height / h0)
+        w = w0 * s
+        h = h0 * s
+      } else if (width) {
+        w = width
+        h = (width * h0) / w0
+      } else {
+        h = height
+        w = (height * w0) / h0
+      }
+    } else {
+      w = width || w0
+      h = height || h0
+    }
+  }
+  return { width: Math.max(1, Math.round(w)), height: Math.max(1, Math.round(h)) }
+}
+
+function drawResized(img, resize) {
+  const { width, height } = computeTargetSize(img, resize)
   const canvas = document.createElement('canvas')
-  canvas.width = img.width * sizeFactor
-  canvas.height = img.height * sizeFactor
+  canvas.width = width
+  canvas.height = height
   const ctx = canvas.getContext('2d')
   ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height)
   return canvas
@@ -47,16 +85,16 @@ function canvasToBlob(canvas, type, quality) {
   })
 }
 
-/** Scales the image by sizeFactor and encodes it as a WebP blob. */
-export async function encodeWebp(file, sizeFactor, quality) {
+/** Resizes the image per the resize descriptor and encodes it as a WebP blob. */
+export async function encodeWebp(file, resize, quality) {
   const img = await loadImageFromFile(file)
-  return canvasToBlob(drawScaled(img, sizeFactor), 'image/webp', quality)
+  return canvasToBlob(drawResized(img, resize), 'image/webp', quality)
 }
 
-/** Scales the image by sizeFactor and encodes it losslessly (PNG) for the compare preview. */
-export async function resizeToBlob(file, sizeFactor) {
+/** Resizes the image per the resize descriptor and encodes it losslessly (PNG) for the compare preview. */
+export async function resizeToBlob(file, resize) {
   const img = await loadImageFromFile(file)
-  return canvasToBlob(drawScaled(img, sizeFactor))
+  return canvasToBlob(drawResized(img, resize))
 }
 
 function isTransparent(ctx, size) {
