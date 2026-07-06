@@ -1,4 +1,4 @@
-const THUMB_SIZE = 150
+const THUMB_SIZE = 300
 const TRANSPARENCY_SAMPLE = 100
 
 export function loadImage(src) {
@@ -85,10 +85,15 @@ function canvasToBlob(canvas, type, quality) {
   })
 }
 
-/** Resizes the image per the resize descriptor and encodes it as a WebP blob. */
-export async function encodeWebp(file, resize, quality) {
+/**
+ * Resizes the image per the resize descriptor and encodes it to the given
+ * mime type. Returns the blob and the output pixel dimensions.
+ */
+export async function processImage(file, resize, quality, type = 'image/webp') {
   const img = await loadImageFromFile(file)
-  return canvasToBlob(drawResized(img, resize), 'image/webp', quality)
+  const canvas = drawResized(img, resize)
+  const blob = await canvasToBlob(canvas, type, quality)
+  return { blob, width: canvas.width, height: canvas.height }
 }
 
 /** Resizes the image per the resize descriptor and encodes it losslessly (PNG) for the compare preview. */
@@ -161,5 +166,11 @@ export async function makeThumbnail(file) {
     const { r, g, b } = getAverageRGB(img)
     bg = `rgb(${r},${g},${b})`
   }
-  return { thumbUrl, transparent, bg }
+  return {
+    thumbUrl,
+    transparent,
+    bg,
+    width: img.naturalWidth || img.width,
+    height: img.naturalHeight || img.height,
+  }
 }
