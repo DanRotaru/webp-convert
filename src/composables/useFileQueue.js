@@ -91,7 +91,11 @@ function createQueue(mode) {
       outHeight: null,
     })
     files.value.push(item)
-    if (!selected.value) selected.value = item
+    // first file in an empty queue: select it and open the before/after preview
+    if (!selected.value) {
+      selected.value = item
+      showPreview.value = true
+    }
     makeThumbnail(file)
       .then(({ thumbUrl, transparent, bg, width, height }) => {
         item.thumbUrl = thumbUrl
