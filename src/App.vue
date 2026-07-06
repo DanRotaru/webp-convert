@@ -1,41 +1,42 @@
 <script setup>
 import SvgSprite from '@/components/SvgSprite.vue'
 import ErrorToast from '@/components/ErrorToast.vue'
-import UploadControls from '@/components/UploadControls.vue'
-import ConversionOptions from '@/components/ConversionOptions.vue'
-import FileQueue from '@/components/FileQueue.vue'
-import CompareSlider from '@/components/CompareSlider.vue'
-import { useFileQueue } from '@/composables/useFileQueue'
-import { useCompare } from '@/composables/useCompare'
+import Workspace from '@/components/Workspace.vue'
+import { useView } from '@/composables/useView'
+import { useTheme } from '@/composables/useTheme'
 
-const { downloadCount, canDownloadAll, downloadAll } = useFileQueue()
-const { activeItem } = useCompare()
+const { activeView, VIEWS } = useView()
+const { theme, toggleTheme } = useTheme()
 </script>
 
 <template>
   <SvgSprite/>
-  <main role="main">
-    <div id="page">
-      <ErrorToast/>
-      <div id="content">
-        <h1><span id="h1Span">Free Bulk Images to WebP Converter Online</span></h1>
-        <div id="headerText">Batch convert JPG, PNG, GIF, SVG, ICO, BMP, and AVIF to WebP. <strong>100% free,
-          instant</strong>, unlimited &amp; directly online in your browser.<br><strong>No Uploads—Files Stay
-          Private!</strong></div>
-      </div>
-      <div id="WEBP-Converter">
-        <UploadControls/>
-        <ConversionOptions/>
-        <FileQueue/>
-        <div id="downloadAllCont">
-          <button id="downloadAll" class="btn" :disabled="!canDownloadAll" @click="downloadAll">
-            <svg viewBox="0 0 16 16" width="22" height="22">
-              <use href="#download"></use>
-            </svg>
-            Download All<span id="downloadCount">{{ downloadCount }}</span></button>
-        </div>
-      </div>
-      <CompareSlider v-if="activeItem"/>
-    </div>
+  <ErrorToast/>
+  <main class="page" role="main">
+    <button class="icon-btn theme-toggle" type="button"
+            :title="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+            @click="toggleTheme">
+      <svg viewBox="0 0 24 24" width="18" height="18">
+        <use :href="theme === 'dark' ? '#sun' : '#moon'"></use>
+      </svg>
+    </button>
+
+    <header class="hero">
+      <svg class="hero-logo" viewBox="0 0 24 24" width="35" height="35"><use href="#logo"></use></svg>
+      <h1 class="hero-title">{{ VIEWS[activeView].title }}</h1>
+    </header>
+    <p class="hero-text">{{ VIEWS[activeView].subtitle }}</p>
+
+    <nav class="view-links" aria-label="Tools">
+      <button v-for="(view, key) in VIEWS" :key="key" type="button"
+              class="view-link" :class="{ active: activeView === key }"
+              @click="activeView = key">{{ view.label }}</button>
+      <a class="view-link" href="https://dan13.me/svgtools/">SVG Tools</a>
+    </nav>
+
+    <Workspace v-show="activeView === 'convert'" mode="convert"/>
+    <Workspace v-show="activeView === 'resize'" mode="resize"/>
+
+    <p class="by">Created with <span>❤️</span> by <a href="https://dan13.me/?utm_source=webp-converter" target="_blank" rel="noopener">DanRotaru</a></p>
   </main>
 </template>

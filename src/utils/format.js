@@ -9,35 +9,15 @@ export function formatBytes(bytes) {
   )
 }
 
-export function replaceExtWithWebp(name) {
-  return name.substring(0, name.lastIndexOf('.')) + '.webp'
+export function replaceExt(name, ext) {
+  const dot = name.lastIndexOf('.')
+  return (dot === -1 ? name : name.substring(0, dot)) + '.' + ext
 }
 
-/**
- * Middle-truncates text so it fits the element's width, keeping the last
- * 7 characters (extension) visible — same behavior as the original fitText().
- */
-export function fitText(text, element) {
-  if (!element) return text
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d', { alpha: false })
-  const style = window.getComputedStyle(element)
-  const maxWidth = element.offsetWidth
-  ctx.font =
-    style.getPropertyValue('font-weight') +
-    ' ' +
-    style.getPropertyValue('font-size') +
-    ' ' +
-    style.getPropertyValue('font-family')
-  if (ctx.measureText(text).width <= maxWidth) return text
-  const head = text.slice(0, -7)
-  const tail = text.slice(-7)
-  const tailWidth = ctx.measureText(tail).width
-  let headWidth = 0
-  let charCount = 0
-  while (headWidth + tailWidth < maxWidth) {
-    charCount += 1
-    headWidth = ctx.measureText(head.slice(0, charCount) + '...').width
-  }
-  return head.slice(0, charCount - 1) + '...' + tail
+export function replaceExtWithWebp(name) {
+  return replaceExt(name, 'webp')
+}
+
+export function fileExt(name) {
+  return name.toLowerCase().split('.').pop()
 }
