@@ -17,9 +17,10 @@ function outputPlan(fileName, mode, quality) {
   if (mode === 'convert') {
     return { type: 'image/webp', name: replaceExtWithWebp(fileName), quality }
   }
+  // resize keeps the original format at the encoder's default (high) quality
   const ext = fileExt(fileName)
   const type = RE_ENCODABLE[ext]
-  if (type) return { type, name: fileName, quality: type === 'image/png' ? undefined : quality }
+  if (type) return { type, name: fileName, quality: undefined }
   return { type: 'image/png', name: replaceExt(fileName, 'png'), quality: undefined }
 }
 

@@ -74,13 +74,12 @@ function toggleAspect() {
         </div>
       </div>
 
-      <div class="setting-group">
+      <div v-if="mode === 'convert'" class="setting-group">
         <div class="setting-label-row">
           <p class="setting-label"><label for="quality">Quality</label></p>
           <span class="setting-value">{{ quality }}%</span>
         </div>
         <input id="quality" v-model.number="quality" class="range" type="range" min="10" max="100" step="1"/>
-        <p v-if="mode === 'resize'" class="setting-hint">Applies to JPG and WebP files.</p>
       </div>
 
       <div class="setting-group">
