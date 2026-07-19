@@ -148,7 +148,7 @@ svg {
   position: relative;
   margin: 0 auto;
   max-width: 1600px;
-  padding: 30px 20px 20px;
+  padding: 30px 20px 0;
 }
 
 .theme-toggle {
@@ -327,7 +327,7 @@ svg {
   display: grid;
   grid-template-columns: 347px minmax(0, 1fr) 300px;
   gap: 12px;
-  height: clamp(460px, calc(100vh - 360px), 800px);
+  height: clamp(480px, calc(100vh - 360px), 800px);
   min-height: 0;
 }
 
@@ -1300,7 +1300,7 @@ svg {
 /* --- footer -------------------------------------------------------------------- */
 
 .by {
-  margin-top: 30px;
+  margin-top: 20px;
   font-size: 14px;
   text-align: center;
   color: var(--text-muted);
