@@ -2,6 +2,8 @@
 
 **Convert and bulk-resize images to WebP, right in your browser. No uploads, no sign-up, no limits.**
 
+![WebP Converter: convert and bulk-resize images to WebP in your browser](public/og-image.png)
+
 🔗 **Live app:** [dan13.me/webp-convert](https://dan13.me/webp-convert/)
 
 ---
