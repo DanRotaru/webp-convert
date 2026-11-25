@@ -1080,15 +1080,76 @@ svg {
   align-items: flex-start;
 }
 
-.format-chip {
+.format-picker {
+  position: relative;
   flex: none;
-  padding: 4px 10px;
+}
+
+.format-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px 4px 10px;
   border-radius: 5px;
   font-size: 11.5px;
   font-weight: 700;
   color: var(--accent);
   background: var(--accent-soft);
   border: 1px solid var(--accent-border);
+  cursor: pointer;
+  transition: 0.2s ease border-color;
+}
+
+.format-chip:hover,
+.format-chip[aria-expanded='true'] {
+  border-color: var(--accent);
+}
+
+.format-chip svg {
+  transition: 0.2s ease transform;
+}
+
+.format-chip[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.format-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 10;
+  min-width: 110px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.format-menu button {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.format-menu button:hover {
+  color: var(--text);
+  background: var(--panel-2-hover);
+}
+
+.format-menu button.active {
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .format-note p {
@@ -1304,19 +1365,27 @@ svg {
   font-size: 14px;
   text-align: center;
   color: var(--text-muted);
+}
+
+.by-sep {
+  margin: 0 6px;
+  opacity: 0.7;
+}
+
+.by-credit {
   opacity: 0.7;
   transition: 0.2s ease opacity;
 }
 
-.by:hover {
+.by-credit:hover {
   opacity: 1;
 }
 
-.by span {
+.by-heart {
   display: inline-block;
 }
 
-.by:hover span {
+.by-credit:hover .by-heart {
   animation: heart 0.4s ease-in-out infinite alternate;
 }
 
@@ -1479,4 +1548,56 @@ svg {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* --- about / FAQ (crawlable copy below the tool) ------------------------------- */
+
+.about {
+  scroll-margin-top: 20px;
+  max-width: 760px;
+  margin: 56px auto 0;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.about-title {
+  margin: 32px 0 14px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: center;
+}
+
+.about-steps {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.about-steps li + li {
+  margin-top: 6px;
+}
+
+.about-steps strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.about-faq details {
+  border-bottom: 1px solid var(--border);
+}
+
+.about-faq summary {
+  padding: 12px 0;
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.about-faq summary:hover {
+  color: var(--accent);
+}
+
+.about-faq p {
+  margin: 0 0 14px;
 }

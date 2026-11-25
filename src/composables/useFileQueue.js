@@ -1,28 +1,11 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { makeThumbnail, processImage } from '@/utils/image'
-import { fileExt, replaceExt, replaceExtWithWebp } from '@/utils/format'
+import { fileExt, replaceExt } from '@/utils/format'
+import { VECTOR_PRESETS, vectorizeImage } from '@/utils/vectorize'
+import { OUTPUT_FORMATS, resolveOutput, sourceFormat } from '@/utils/formats'
 import { useErrorMessage } from './useErrorMessage'
 
 export const ACCEPTED_EXTENSIONS = ['apng', 'png', 'avif', 'gif', 'jpg', 'jpeg', 'svg', 'webp', 'bmp', 'ico']
-
-/** Formats the canvas encoder can write back; anything else becomes PNG in resize mode. */
-const RE_ENCODABLE = {
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  png: 'image/png',
-  webp: 'image/webp',
-}
-
-function outputPlan(fileName, mode, quality) {
-  if (mode === 'convert') {
-    return { type: 'image/webp', name: replaceExtWithWebp(fileName), quality }
-  }
-  // resize keeps the original format at the encoder's default (high) quality
-  const ext = fileExt(fileName)
-  const type = RE_ENCODABLE[ext]
-  if (type) return { type, name: fileName, quality: undefined }
-  return { type: 'image/png', name: replaceExt(fileName, 'png'), quality: undefined }
-}
 
 function createQueue(mode) {
   const files = ref([])
@@ -30,11 +13,18 @@ function createQueue(mode) {
   const showPreview = ref(false)
   const downloadMode = ref('zip') // 'zip' | 'files' — only relevant with more than one file
   const quality = ref(80) // percent
+  // a key of OUTPUT_FORMATS, or 'original' to keep each file's format
+  const outputFormat = ref(mode === 'convert' ? 'webp' : 'original')
   // scale factor value, or 'custom' for explicit dimensions; resize mode is custom-only
   const sizeChoice = ref(mode === 'resize' ? 'custom' : '1')
   const customWidth = ref('')
   const customHeight = ref('')
   const keepAspect = ref(true)
+  // vectorize mode: imagetracerjs preset plus the knobs exposed as sliders
+  const vectorPreset = ref('default')
+  const vectorColors = ref(VECTOR_PRESETS.default.colors)
+  const vectorDetail = ref(VECTOR_PRESETS.default.pathomit) // pathomit: drop paths shorter than this
+  const vectorBlur = ref(VECTOR_PRESETS.default.blur)
   let nextId = 0
   let converting = false
 
@@ -117,9 +107,23 @@ function createQueue(mode) {
       // Settings are read at conversion time, so a reprocess picks up changes
       item.quality = quality.value / 100
       item.resize = snapshotResize()
-      const plan = outputPlan(item.file.name, mode, item.quality)
+      if (mode === 'vectorize') {
+        await vectorizeItem(item)
+        continue
+      }
+      const plan = resolveOutput(item.file.name, outputFormat.value)
+      // resize mode keeps originals at the encoder's default (high) quality
+      const q = mode === 'resize' && outputFormat.value === 'original' ? undefined : item.quality
       try {
-        const { blob, width, height } = await processImage(item.file, item.resize, plan.quality, plan.type)
+        const result = await processImage(item.file, item.resize, q, plan.format)
+        const { width, height } = result
+        let blob = result.blob
+        // same format and dimensions but bigger: re-encoding didn't help, keep the original file
+        const unchangedShape =
+          plan.format === sourceFormat(item.file.name) &&
+          width === result.sourceWidth &&
+          height === result.sourceHeight
+        if (unchangedShape && blob.size >= item.file.size) blob = item.file
         if (!files.value.includes(item)) continue // removed while converting
         if (item.url) URL.revokeObjectURL(item.url)
         item.blob = blob
@@ -135,6 +139,38 @@ function createQueue(mode) {
     converting = false
   }
 
+  async function vectorizeItem(item) {
+    item.resize = { mode: 'scale', factor: 1 }
+    try {
+      const { blob, width, height } = await vectorizeImage(item.file, {
+        preset: vectorPreset.value,
+        colors: vectorColors.value,
+        pathomit: vectorDetail.value,
+        blur: vectorBlur.value,
+      })
+      if (!files.value.includes(item)) return // removed while tracing
+      if (item.url) URL.revokeObjectURL(item.url)
+      item.blob = blob
+      item.url = URL.createObjectURL(blob)
+      item.outName = replaceExt(item.file.name, 'svg')
+      item.outWidth = width
+      item.outHeight = height
+      item.state = 'done'
+    } catch {
+      if (files.value.includes(item)) item.state = 'error'
+    }
+  }
+
+  /** Picking a preset seeds the sliders with its values. */
+  function applyVectorPreset(key) {
+    const preset = VECTOR_PRESETS[key]
+    if (!preset) return
+    vectorPreset.value = key
+    vectorColors.value = preset.colors
+    vectorDetail.value = preset.pathomit
+    vectorBlur.value = preset.blur
+  }
+
   /** Settings changed: run every finished (or failed) file through the encoder again. */
   function reprocessAll() {
     let touched = false
@@ -148,7 +184,7 @@ function createQueue(mode) {
   }
 
   let reprocessTimer = null
-  watch([quality, sizeChoice, customWidth, customHeight, keepAspect], () => {
+  watch([quality, outputFormat, sizeChoice, customWidth, customHeight, keepAspect, vectorPreset, vectorColors, vectorDetail, vectorBlur], () => {
     if (!hasFiles.value) return
     clearTimeout(reprocessTimer)
     reprocessTimer = setTimeout(reprocessAll, 400)
@@ -201,7 +237,13 @@ function createQueue(mode) {
     const zip = new window.JSZip()
     done.forEach((f, i) => zip.file(names[i], f.blob))
     const zipBlob = await zip.generateAsync({ type: 'blob' })
-    window.saveAs(zipBlob, mode === 'convert' ? 'toWEBP.zip' : 'resized.zip')
+    const zipName =
+      mode === 'vectorize'
+        ? 'vectorized.zip'
+        : outputFormat.value === 'original'
+        ? (mode === 'convert' ? 'converted.zip' : 'resized.zip')
+        : `to${OUTPUT_FORMATS[outputFormat.value].label.toUpperCase()}.zip`
+    window.saveAs(zipBlob, zipName)
   }
 
   return {
@@ -211,10 +253,16 @@ function createQueue(mode) {
     showPreview,
     downloadMode,
     quality,
+    outputFormat,
     sizeChoice,
     customWidth,
     customHeight,
     keepAspect,
+    vectorPreset,
+    vectorColors,
+    vectorDetail,
+    vectorBlur,
+    applyVectorPreset,
     hasFiles,
     totalSize,
     downloadCount,
@@ -230,6 +278,7 @@ function createQueue(mode) {
 const queues = {
   convert: createQueue('convert'),
   resize: createQueue('resize'),
+  vectorize: createQueue('vectorize'),
 }
 
 export function useQueue(mode) {

@@ -1,0 +1,14 @@
+{
+  "name": "WebP Converter",
+  "short_name": "WebP Converter",
+  "description": "Batch convert images to WebP and bulk-resize them in your browser. No uploads.",
+  "start_url": "/webp-convert/",
+  "scope": "/webp-convert/",
+  "display": "standalone",
+  "background_color": "#181d2c",
+  "theme_color": "#181d2c",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

@@ -13,6 +13,12 @@ export const VIEWS = {
     icon: 'resize',
     label: 'Resize',
   },
+  vectorize: {
+    title: 'Vectorizer',
+    subtitle: 'Trace JPG, PNG and other raster images into scalable SVG vectors, right in your browser.',
+    icon: 'vector',
+    label: 'Vectorizer',
+  },
 }
 
 export const QUEUE_LAYOUTS = [

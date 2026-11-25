@@ -1,3 +1,7 @@
+import { encodeBmp, encodeIco } from './encoders'
+import { OUTPUT_FORMATS } from './formats'
+import { encodePng, qualityToColors } from './png'
+
 const THUMB_SIZE = 300
 const TRANSPARENCY_SAMPLE = 100
 
@@ -65,12 +69,21 @@ export function computeTargetSize(img, resize) {
   return { width: Math.max(1, Math.round(w)), height: Math.max(1, Math.round(h)) }
 }
 
-function drawResized(img, resize) {
-  const { width, height } = computeTargetSize(img, resize)
+function drawResized(img, resize, { maxSize, background } = {}) {
+  let { width, height } = computeTargetSize(img, resize)
+  if (maxSize && Math.max(width, height) > maxSize) {
+    const s = maxSize / Math.max(width, height)
+    width = Math.max(1, Math.round(width * s))
+    height = Math.max(1, Math.round(height * s))
+  }
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
+  if (background) {
+    ctx.fillStyle = background
+    ctx.fillRect(0, 0, width, height)
+  }
   ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height)
   return canvas
 }
@@ -87,13 +100,22 @@ function canvasToBlob(canvas, type, quality) {
 
 /**
  * Resizes the image per the resize descriptor and encodes it to the given
- * mime type. Returns the blob and the output pixel dimensions.
+ * output format (a key of OUTPUT_FORMATS). Returns the blob and the output pixel dimensions.
  */
-export async function processImage(file, resize, quality, type = 'image/webp') {
+export async function processImage(file, resize, quality, format = 'webp') {
+  const spec = OUTPUT_FORMATS[format]
   const img = await loadImageFromFile(file)
-  const canvas = drawResized(img, resize)
-  const blob = await canvasToBlob(canvas, type, quality)
-  return { blob, width: canvas.width, height: canvas.height }
+  const canvas = drawResized(img, resize, {
+    maxSize: spec.maxSize,
+    background: spec.opaque ? '#fff' : null,
+  })
+  const pixels = () => canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
+  let blob
+  if (format === 'bmp') blob = encodeBmp(canvas)
+  else if (format === 'png') blob = await encodePng(pixels(), { colors: qualityToColors(quality) })
+  else if (format === 'ico') blob = await encodeIco(await encodePng(pixels()), canvas.width, canvas.height)
+  else blob = await canvasToBlob(canvas, spec.mime, spec.lossy ? quality : undefined)
+  return { blob, width: canvas.width, height: canvas.height, sourceWidth: img.width, sourceHeight: img.height }
 }
 
 /** Resizes the image per the resize descriptor and encodes it losslessly (PNG) for the compare preview. */

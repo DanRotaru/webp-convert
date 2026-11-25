@@ -102,6 +102,11 @@
         <path d="M9 12h6"/>
         <path d="M12 9v6"/>
       </g>
+      <g id="vector" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="5" height="5" rx="1"/>
+        <rect x="16" y="16" width="5" height="5" rx="1"/>
+        <path d="M8 5.5h5a6 6 0 0 1 6 6V16"/>
+      </g>
       <g id="sun" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="4"/>
         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>

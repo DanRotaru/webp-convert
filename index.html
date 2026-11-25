@@ -2,16 +2,127 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebP Converter - Free Bulk Image Converter & Resizer</title>
-    <meta name="description" content="Convert JPG, PNG, GIF, SVG, BMP, ICO and AVIF to WebP and bulk-resize images-100% free, no uploads, instant results.">
+    <title>WebP Converter – Convert JPG, PNG & GIF to WebP Online, Free & Private</title>
+    <meta name="description" content="Free online WebP converter. Batch convert JPG, PNG, GIF, SVG, BMP, ICO and AVIF to WebP and bulk-resize images right in your browser. No uploads, no sign-up, no limits.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="author" content="Dan Rotaru">
+    <link rel="canonical" href="https://dan13.me/webp-convert/">
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#181d2c">
+    <meta name="color-scheme" content="dark light">
+
+    <!-- Open Graph / social previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WebP Converter">
+    <meta property="og:url" content="https://dan13.me/webp-convert/">
+    <meta property="og:title" content="WebP Converter – Free, Private Bulk Image Converter">
+    <meta property="og:description" content="Batch convert JPG, PNG, GIF, SVG, BMP, ICO and AVIF to WebP and bulk-resize images in your browser. Nothing is uploaded.">
+    <meta property="og:image" content="https://dan13.me/webp-convert/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="WebP Converter – convert and resize images in your browser">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WebP Converter – Free, Private Bulk Image Converter">
+    <meta name="twitter:description" content="Batch convert JPG, PNG, GIF, SVG, BMP, ICO and AVIF to WebP and bulk-resize images in your browser. Nothing is uploaded.">
+    <meta name="twitter:image" content="https://dan13.me/webp-convert/og-image.png">
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://dan13.me/webp-convert/#app",
+            "name": "WebP Converter",
+            "url": "https://dan13.me/webp-convert/",
+            "description": "Free browser-based tool to batch convert JPG, PNG, GIF, SVG, BMP, ICO and AVIF images to WebP and bulk-resize images. Files are processed locally and never uploaded.",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "Any (web browser)",
+            "browserRequirements": "Requires JavaScript and a modern browser",
+            "image": "https://dan13.me/webp-convert/og-image.png",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "featureList": [
+              "Convert JPG, PNG, GIF, SVG, BMP, ICO and AVIF to WebP",
+              "Batch conversion with ZIP download",
+              "Bulk image resizing",
+              "Output to WebP, PNG, JPG, BMP, ICO or AVIF",
+              "Adjustable quality",
+              "Before/after preview with file size comparison",
+              "100% client-side: images never leave your device"
+            ],
+            "author": { "@type": "Person", "name": "Dan Rotaru", "url": "https://dan13.me/" }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://dan13.me/webp-convert/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Are my images uploaded to a server?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No. Conversion and resizing run entirely in your browser using its built-in image encoder. Your files never leave your device." }
+              },
+              {
+                "@type": "Question",
+                "name": "Which formats can I convert to WebP?",
+                "acceptedAnswer": { "@type": "Answer", "text": "JPG/JPEG, PNG, GIF, SVG, BMP, ICO and AVIF. Animated GIFs are converted using their first frame." }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I convert to PNG, JPG or other formats?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. WebP is the default, but you can also save images as PNG, JPG, BMP or ICO (and AVIF in browsers that support it), or keep each file in its original format." }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I convert many images at once?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drop in as many images as you like, convert them in one batch and download everything as a single ZIP file." }
+              },
+              {
+                "@type": "Question",
+                "name": "Why use WebP instead of JPG or PNG?",
+                "acceptedAnswer": { "@type": "Answer", "text": "WebP files are typically 25–35% smaller than JPG or PNG at the same visual quality, and support transparency. Smaller images make websites load faster, which helps users and search rankings." }
+              },
+              {
+                "@type": "Question",
+                "name": "Is the WebP Converter free?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is completely free with no sign-up, no watermarks and no file limits." }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+
     <script>
       // Apply the saved theme before first paint to avoid a flash
       try {
         if (localStorage.getItem('webp-theme') === 'light') document.documentElement.dataset.theme = 'light'
       } catch (e) {}
+    </script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtm.js?id=G-Y14P7SCC0F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      // Page URL without the #… part (it holds the route's coordinates and place names).
+      gtag('config', 'G-Y14P7SCC0F', { page_location: location.origin + location.pathname, anonymize_ip: true });
+    </script>
+
+    <!-- Microsoft Clarity (masking off: the whole page is unmasked) -->
+    <script>
+      document.documentElement.setAttribute('data-clarity-unmask', 'true');
+      (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "zi5yx6c3es");
     </script>
   </head>
   <body>

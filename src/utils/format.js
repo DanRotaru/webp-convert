@@ -14,10 +14,6 @@ export function replaceExt(name, ext) {
   return (dot === -1 ? name : name.substring(0, dot)) + '.' + ext
 }
 
-export function replaceExtWithWebp(name) {
-  return replaceExt(name, 'webp')
-}
-
 export function fileExt(name) {
   return name.toLowerCase().split('.').pop()
 }

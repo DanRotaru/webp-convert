@@ -32,7 +32,7 @@ const zoomLabel = computed(() => Math.round(zoom.value * 100) + '%')
 
 const outLabel = computed(() => {
   if (!selected.value) return ''
-  return props.mode === 'convert' ? 'WebP' : fileExt(selected.value.outName || selected.value.file.name).toUpperCase()
+  return fileExt(selected.value.outName || selected.value.file.name).toUpperCase()
 })
 const savingsText = computed(() => {
   const item = selected.value
